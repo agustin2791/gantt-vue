@@ -4,14 +4,20 @@
     Start: <input type="date" name="dateStart" v-model="initDate"><br>
     End: <input type="date" name="endDate" v-model="endDate"><br>
     <button @click="chartDates(initDate, endDate)" type="button">Chart</button>
-    Start: {{ initDate }} | End: {{ endDate }}
+    Start: {{ initDate }} | End: {{ endDate }}<br>
+    <div class="container-left">
+      <div class="filler"></div>
+      <div class="tasks" v-for="(t, index) in tasks" :key="index">
+        {{ t.task }}
+      </div>
+    </div>
     <div class="container">
       <div class="calendar" id="calendar" v-if="dateSelected != null">
         <div class="date-data"  v-for="(date, index) in dateSelected" :key="index" :data-date="date.date0">
           {{ date.month }}<br>{{ date.date }}
         </div>
         <div v-for="(t, index) in tasks">
-          <div :style="{width: t.duration * 50 + (t.duration * 2) + 'px'}" class="duration" :data-key-selector="index">{{ t.duration }}
+          <div :style="{width: t.duration * 50 + (t.duration * 2) + 'px'}" class="duration" :data-key-selector="index">
             <div class="mover" @mousedown="initMoving($event, index)"></div>
             <div class="resizer" @mousedown="initResize(index)"></div></div>
         </div>
@@ -93,14 +99,16 @@ export default {
     },
     resizer(event) {
       let resizeDiv = document.querySelector('[data-key-selector="' + this.selected + '"]'),
+          taskDivSize = document.querySelectorAll('div.container-left')[0].offsetWidth + 10,
           initSize = resizeDiv.style.width;
       if (this.isDragging) {
-        resizeDiv.style.width = (event.clientX - resizeDiv.offsetLeft) + 'px';
+        resizeDiv.style.width = ((event.clientX - resizeDiv.offsetLeft) - taskDivSize)+ 'px';
       }
       let endSize = resizeDiv.style.width;
     },
     stopResize() {
       this.isDragging = false;
+
       if (this.selected != null) {
         let resizeDiv = document.querySelector('[data-key-selector="' + this.selected + '"]');
         let initSize = parseInt(this.initSize.slice(0, -2));
@@ -109,8 +117,12 @@ export default {
           if (endSize - initSize < 0 ) {
             let diff = endSize - initSize;
             if (diff % 50 != 0) {
-              while (diff % 50 != 0) {
-                diff--;
+              if (diff / 50 > -1) {
+                diff = -50;
+              } else {
+                while (diff % 50 != 0) {
+                  diff++;
+                }
               }
               this.tasks[this.selected].duration += diff / 50;
             } else {
@@ -204,19 +216,20 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .duration {
-  height: 50px;
-  background-color: #0ff;
+  height: 30px;
+  background-color: #00a8ff;
   position: relative;
   margin-bottom: 5px;
 }
 .resizer {
-  height: 50px;
+  height: 30px;
   width:10px;
-  background: #f00;
+  background: #0097e6;
   position: absolute;
   top: 0px;
   right: 0px;
   z-index: 5;
+  cursor: col-resize;
 }
 .mover {
   height: 10px;
@@ -225,29 +238,53 @@ export default {
   top: 100%;
   left: 50%;
   transform: translate(-50%, -10px);
-  background: #5DD;
+  background: #0097e6;
   border-top-right-radius: 50px;
   border-top-left-radius: 50px;
+  cursor: grab;
+}
+.mover:active {
+  cursor: grabbing;
 }
 .container {
-  width: 100%;
+  width: 80%;
   position: relative;
   overflow-x: scroll;
   background-image: url('../assets/background.jpg');
   background-repeat: repeat;
   background-position: 0 0;
   background-attachment: local;
+  display: inline-block;
+  position: relative;
 }
 .calendar {
   position: relative;
   display: block;
   white-space: nowrap;
+  padding-bottom: 50px;
 }
 .date-data {
   position: relative;
   display: inline-block;
   width: 50px;
-  background: #f99;
-  border: solid thin #f77;
+  background: #40739e;
+  border: solid thin #fff;
+  color: #fff;
+}
+.container-left {
+  width: 19%;
+  display: inline-block;
+  vertical-align: top;
+  position: relative;
+}
+.filler {
+  height: 46px;
+  width: 100%;
+}
+.tasks {
+  height: 29px;
+  padding-bottom: 5px;
+  text-align: right;
+  border-bottom: solid thin #000;
 }
 </style>
