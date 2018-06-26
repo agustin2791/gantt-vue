@@ -29,17 +29,17 @@ export default {
         {
           task: 'task 1',
           duration: 4,
-          startDate: new Date()
+          startDate: new Date('06-13-2018'),
         },
         {
           task: 'task 2',
           duration: 4,
-          startDate: new Date('06-25-2018')
+          startDate: new Date('06-25-2018'),
         },
         {
           task: 'task 3',
           duration: 4,
-          startDate: new Date('07-01-2018')
+          startDate: new Date('07-01-2018'),
         }
       ],
       duration: 4,
@@ -52,6 +52,8 @@ export default {
       initDate: '2018-06-11',
       endDate: '2018-07-11',
       dateSelected: null,
+      selectedShow: false,
+      offsetLeft: null,
       months: ['January', 'February','March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
     }
   },
@@ -69,11 +71,40 @@ export default {
             month: this.months[newDate.getMonth()],
             year: newDate.getYear(),
             day: newDate.getDay(),
-            date0: newDate
+            date0: this.months[newDate.getMonth()] + '-' + newDate.getDate() + '-' + newDate.getYear()
           });
-          console.log(i + ': ' + newDate);
       }
       this.dateSelected = selected;
+      setTimeout(function() {
+        this.taskLocator()
+        // let duration = document.querySelectorAll('div.duration');
+        // console.log(document.querySelectorAll('div.duration'));
+        // if (duration != null) {
+        //   for (let i = 0; i < this.tasks.length; i++) {
+        //     console.log(this.tasks[i].startDate);
+        //     let offset = document.querySelector('[data-date="' + this.months[this.tasks[i].startDate.getMonth()] + '-' + this.tasks[i].startDate.getDate() + '-' + this.tasks[i].startDate.getYear() + '"]').offsetLeft;
+        //     console.log(offset);
+        //     document.querySelector('[data-key-selector="'+ i +'"]').style.position = 'absolute';
+        //     document.querySelector('[data-key-selector="'+ i +'"]').style.left = offset + 'px';
+        //     document.querySelector('[data-key-selector="'+ i +'"]').style.position = 'relative';
+        //   }
+        // }
+      }.bind(this))
+    },
+    taskLocator() {
+      let duration = document.querySelectorAll('div.duration');
+      console.log(duration);
+      if (duration != null) {
+        for (let i = 0; i < this.tasks.length; i++) {
+          console.log(this.tasks[i].startDate);
+          let offset = document.querySelector('[data-date="' + this.months[this.tasks[i].startDate.getMonth()] + '-' + this.tasks[i].startDate.getDate() + '-' + this.tasks[i].startDate.getYear() + '"]').offsetLeft;
+          console.log(offset);
+          document.querySelector('[data-key-selector="'+ i +'"]').style.position = 'absolute';
+          document.querySelector('[data-key-selector="'+ i +'"]').style.left = offset + 'px';
+          document.querySelector('[data-key-selector="'+ i +'"]').style.position = 'relative';
+        }
+      }
+
     },
     resizer(event) {
       let resizeDiv = document.querySelector('[data-key-selector="' + this.selected + '"]'),
@@ -153,7 +184,7 @@ export default {
       window.removeEventListener('mousemove', this.mover, false);
       window.removeEventListener('mouseup', this.stopMoving, false);
     }
-  }
+  },
 }
 </script>
 
