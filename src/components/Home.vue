@@ -48,7 +48,7 @@ export default {
       selected: null,
       initSize: 0,
       initPos: 0,
-      initY: 0,
+      initX: 0,
       initDate: '2018-06-11',
       endDate: '2018-07-11',
       dateSelected: null,
@@ -77,28 +77,13 @@ export default {
       this.dateSelected = selected;
       setTimeout(function() {
         this.taskLocator()
-        // let duration = document.querySelectorAll('div.duration');
-        // console.log(document.querySelectorAll('div.duration'));
-        // if (duration != null) {
-        //   for (let i = 0; i < this.tasks.length; i++) {
-        //     console.log(this.tasks[i].startDate);
-        //     let offset = document.querySelector('[data-date="' + this.months[this.tasks[i].startDate.getMonth()] + '-' + this.tasks[i].startDate.getDate() + '-' + this.tasks[i].startDate.getYear() + '"]').offsetLeft;
-        //     console.log(offset);
-        //     document.querySelector('[data-key-selector="'+ i +'"]').style.position = 'absolute';
-        //     document.querySelector('[data-key-selector="'+ i +'"]').style.left = offset + 'px';
-        //     document.querySelector('[data-key-selector="'+ i +'"]').style.position = 'relative';
-        //   }
-        // }
       }.bind(this))
     },
     taskLocator() {
       let duration = document.querySelectorAll('div.duration');
-      console.log(duration);
       if (duration != null) {
         for (let i = 0; i < this.tasks.length; i++) {
-          console.log(this.tasks[i].startDate);
           let offset = document.querySelector('[data-date="' + this.months[this.tasks[i].startDate.getMonth()] + '-' + this.tasks[i].startDate.getDate() + '-' + this.tasks[i].startDate.getYear() + '"]').offsetLeft;
-          console.log(offset);
           document.querySelector('[data-key-selector="'+ i +'"]').style.position = 'absolute';
           document.querySelector('[data-key-selector="'+ i +'"]').style.left = offset + 'px';
           document.querySelector('[data-key-selector="'+ i +'"]').style.position = 'relative';
@@ -127,7 +112,6 @@ export default {
               while (diff % 50 != 0) {
                 diff--;
               }
-              console.log(diff / 50)
               this.tasks[this.selected].duration += diff / 50;
             } else {
               this.tasks[this.selected].duration += diff / 50;
@@ -165,7 +149,7 @@ export default {
       this.selected = key;
       let moveDiv = document.querySelector('[data-key-selector="' + this.selected + '"]');
       this.initPos = event.clientX;
-      this.initY = moveDiv.offsetLeft;
+      this.initX = moveDiv.offsetLeft;
       window.addEventListener('mousemove', this.mover, false);
       window.addEventListener('mouseup', this.stopMoving, false);
     },
@@ -175,12 +159,41 @@ export default {
       moveDiv.style.position = 'absolute';
       if (this.isMoving) {
         let diff = event.clientX - this.initPos;
-        moveDiv.style.left = this.initY + diff + 'px';
+        moveDiv.style.left = this.initX + diff + 'px';
       }
       moveDiv.style.position = 'relative';
     },
     stopMoving() {
       this.isMoving = false;
+      if (this.selected != null) {
+        let positionOne = this.initX;
+        let positionTwo = document.querySelector('[data-key-selector="' + this.selected + '"]').offsetLeft;
+        let diff = positionTwo - positionOne;
+        let originalDate = new Date(this.tasks[this.selected].startDate);
+        let ticks;
+        if (diff < 0) {
+          while(diff % 50 != 0) {
+            diff--;
+          }
+          ticks = diff / 50;
+        } else if (diff >= 0) {
+          if (diff % 50 > 40) {
+
+            while (diff % 50 != 0) {
+              diff++;
+            }
+          } else {
+            while (diff % 50 != 0) {
+              diff--;
+            }
+          }
+
+          ticks = diff / 50;
+        }
+        originalDate.setDate(originalDate.getDate() + ticks);
+        this.tasks[this.selected].startDate = originalDate;
+        this.taskLocator();
+      }
       window.removeEventListener('mousemove', this.mover, false);
       window.removeEventListener('mouseup', this.stopMoving, false);
     }
@@ -213,11 +226,17 @@ export default {
   left: 50%;
   transform: translate(-50%, -10px);
   background: #5DD;
+  border-top-right-radius: 50px;
+  border-top-left-radius: 50px;
 }
 .container {
   width: 100%;
   position: relative;
   overflow-x: scroll;
+  background-image: url('../assets/background.jpg');
+  background-repeat: repeat;
+  background-position: 0 0;
+  background-attachment: local;
 }
 .calendar {
   position: relative;
