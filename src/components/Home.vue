@@ -55,6 +55,7 @@ export default {
       initSize: 0,
       initPos: 0,
       initX: 0,
+      initY: 0,
       initDate: '2018-06-11',
       endDate: '2018-07-11',
       dateSelected: null,
@@ -210,6 +211,9 @@ export default {
       window.removeEventListener('mouseup', this.stopMoving, false);
     }
   },
+  taskMoveInit() {
+
+  }
 }
 </script>
 
