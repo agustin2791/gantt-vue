@@ -71,9 +71,22 @@ export default {
             day: newDate.getDay(),
             date0: newDate
           });
-          console.log(i + ': ' + newDate);
       }
       this.dateSelected = selected;
+      if (this.tasks != null) {
+        let durationTasks = document.getElementsByClassName('duration');
+        console.log(durationTasks);
+        for (let i = 0; i <= durationTasks.length; i++) {
+
+          for(let j = 0; j <= selected.length; j++) {
+            if (durationTasks[i].dataset.keySelector == selected[j].date0) {
+              console.log(selected[j].date0);
+            }
+          }
+        }
+      }
+
+
     },
     resizer(event) {
       let resizeDiv = document.querySelector('[data-key-selector="' + this.selected + '"]'),
